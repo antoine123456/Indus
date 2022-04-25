@@ -14,6 +14,7 @@ from shapely import affinity
 import shapely.geometry as sg
 import shapely.ops as so
 import matplotlib.pyplot as plt
+import utils as ut
 class PatchPolygon:
 
     def __init__(self, polygon, **kwargs):
@@ -51,17 +52,25 @@ def chaine(no):
     con.orientation()
     interi=inter.interieur(image,con.D,con.G)#
     interi.contour()
+    
     plt.plot(con.x, con.y, color="blue")
+    
     plt.plot(interi.contourGauche[0],interi.contourGauche[1])
     plt.plot(interi.contourDroit[0],interi.contourDroit[1])
     polAc= Polygon([*zip(con.x,con.y)])
     pol= Polygon([*zip(interi.contourGauche[0],interi.contourGauche[1])])
     polEu= Polygon([*zip(interi.contourDroit[0],interi.contourDroit[1])])
     difference = polAc.difference(polEu).difference(pol)
+    
+    # xr,yr=ut.rotate_around_point_highperf([con.x,con.y], np.pi/2-interi.moAngle, con.M)
+    
+    # plt.plot(xr,yr)
+    print(180/np.pi*interi.moAngle)
+    
     return difference
 
 if __name__ == "__main__":
-    chaine(17)
+    chaine(19)
     ##
 
     # dif1,dif2=chaine(19),chaine(18)
@@ -81,6 +90,6 @@ if __name__ == "__main__":
     # ax1.set_ylim(10, 800)
     # ax1.add_patch(PatchPolygon(different, facecolor='blue', edgecolor='red').patch)
     # plt.imshow(image, cmap=plt.get_cmap('gray'))
-    plt.show()
+    # plt.show()
     # todo interne
     # todo rotation selon orientation interne

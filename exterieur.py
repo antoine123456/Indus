@@ -2,38 +2,6 @@ import numpy as np
 import utils as ut
 import matplotlib.pyplot as plt
 import matplotlib.image as img
-def rotate_around_point_highperf(xy, radians, origin=(0, 0)):
-    """Rotate a point around a given point.
-
-    I call this the "high performance" version since we're caching some
-    values that are needed >1 time. It's less readable than the previous
-    function but it's faster.
-    """
-    x, y = xy
-    offset_x, offset_y = origin
-    adjusted_x = (x - offset_x)
-    adjusted_y = (y - offset_y)
-    cos_rad = np.cos(radians)
-    sin_rad = np.sin(radians)
-    qx = offset_x + cos_rad * adjusted_x + sin_rad * adjusted_y
-    qy = offset_y + -sin_rad * adjusted_x + cos_rad * adjusted_y
-    return qx, qy
-
-def rotate(src,angle,pivot,imshape):
-    rotation_mat = np.transpose(np.array([[np.cos(angle),-np.sin(angle)],[np.sin(angle),np.cos(angle)]]))
-    h,w=imshape
-    pivotX,pivotY = pivot[0],pivot[1]
-    sortie = np.zeros(src.shape,dtype='u1')
-    for height in range(h):
-        for width in range(w):
-            xy_mat=np.array([[width-pivotX],[height-pivotY]])
-            rotate_mat = np.dot(rotation_mat,xy_mat)
-            new_x = pivotX + int(rotate_mat[0])
-            new_y = pivotY + int(rotate_mat[1])
-            if(0<=new_x<=w-1) and (0<=new_y<=h-1):
-                sortie[new_y,new_x]=src[height,width]
-    return sortie
-
 class contourExterieur(object):
     def __init__(self,image):
         """
@@ -171,8 +139,8 @@ class contourExterieur(object):
             xmd,ymd=int(max(xd,xm)-abs(xm-xd)/3),int(min(yd,ym)+abs(ym-yd)/3) #point milieux droit
         #rotation
         theta = np.arctan(abs(ym-yg)/abs(xm-xg))#np.pi/180*
-        xx,yy=rotate_around_point_highperf([xg,yg],-theta,[xm,ym])
-        xx1,yy1=rotate_around_point_highperf([xd,yd],-theta,[xm,ym])
+        xx,yy=ut.rotate_around_point_highperf([xg,yg],-theta,[xm,ym])
+        xx1,yy1=ut.rotate_around_point_highperf([xd,yd],-theta,[xm,ym])
 
 
         #TRACE
@@ -206,7 +174,7 @@ class contourExterieur(object):
         # UTILE
         xR,yR=[],[]
         for i,j in zip(X,Y):
-            a,b=rotate_around_point_highperf([i,j],-theta,[xm,ym])
+            a,b=ut.rotate_around_point_highperf([i,j],-theta,[xm,ym])
             xR.append(a)
             yR.append(b)
 

@@ -1,6 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
+def rotate_around_point_highperf(xy, radians, origin=(0, 0)):
+    """Rotate a point around a given point.
 
+    I call this the "high performance" version since we're caching some
+    values that are needed >1 time. It's less readable than the previous
+    function but it's faster.
+    """
+    x, y = xy
+    offset_x, offset_y = origin
+    adjusted_x = (x - offset_x)
+    adjusted_y = (y - offset_y)
+    cos_rad = np.cos(radians)
+    sin_rad = np.sin(radians)
+    qx = offset_x + cos_rad * adjusted_x + sin_rad * adjusted_y
+    qy = offset_y + -sin_rad * adjusted_x + cos_rad * adjusted_y
+    return qx, qy
 def polyfit_with_fixed_points(n, x, y, xf, yf):
     mat = np.empty((n + 1 + len(xf),) * 2)
     vec = np.empty((n + 1 + len(xf),))
@@ -40,6 +55,7 @@ def merge(listea, listeb, x0=0, y0=0):
         Yn = np.append(Yn, poly(xx))
     subx = listea[dec*pas:]
     suby = listeb[dec*pas:]
+    
     if len(subx) > 10:
         params = polyfit_with_fixed_points(1, subx, suby, Xn[-1:], Yn[-1:])
         poly = np.polynomial.Polynomial(params)

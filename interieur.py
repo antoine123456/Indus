@@ -17,7 +17,11 @@ class interieur(object):
         """
         vectorAmplDecale = np.roll(liste,-1)
         A=liste+128-vectorAmplDecale < 128+tol
-        return np.where(A==False)[0][0]
+        res = np.where(A==False)
+        if len(res[0])>0:
+            return res[0][0]
+        else:
+            return 0
 
     def bordpm(self,xmid,ymid):
         """
@@ -43,7 +47,7 @@ class interieur(object):
     
     def interne(self,origine):
         """
-        
+        contours des trous internes
         """
         lr=self.bordpm(origine[0],origine[1]) #bords interieurs
         #bords des trous
@@ -88,10 +92,21 @@ class interieur(object):
         ordre=np.argsort(xa1)
         xa1,ya1=xa1[ordre],ya1[ordre]
         xmb,ymb=ut.merge(xa1,ya1)
-        self.contourGauche=[np.concatenate((np.flip(ym),yma,np.flip(xmb))),np.concatenate((np.flip(xm),xma,np.flip(ymb)))]
+        
+        
+        limite=20
+        orx,ory=xm[limite:-limite],ym[limite:-limite]
+        params=np.polyfit(ory, orx, 1)
+        xx = np.linspace(min(ory)-10, max(ory)+10,int(max(ory)-min(ory)), dtype='int')
+        Y=params[1]+params[0]*xx
+        print(180/np.pi*np.arctan(params[0]))
+        plt.plot(xx,Y)
+        self.angleCaraGauche=np.arctan(params[0])
+        self.contourGauche.append(np.concatenate((np.flip(ym),yma,np.flip(xmb))))
+        self.contourGauche.append(np.concatenate((np.flip(xm),xma,np.flip(ymb))))
 
     def interneCompDroit(self,bords):
-           """
+        """
         Eviction des points doubles
         
         Ces fonctions se répètent car il n'est pas très utile de les regrouper
@@ -122,26 +137,39 @@ class interieur(object):
         xa1,ya1=xa1[ordre],ya1[ordre]
         xmb,ymb=ut.merge(xa1,ya1)
         
+        limite=20
+        orx,ory=xm[limite:-limite],ym[limite:-limite]
+        params=np.polyfit(ory, orx, 1)
+        print(params)
+        xx = np.linspace(min(ory)-10, max(ory)+10,int(max(ory)-min(ory)), dtype='int')
+        Y=params[1]+params[0]*xx
+        print(180/np.pi*np.arctan(params[0]))
+        plt.plot(xx,Y)
+        
+        self.angleCaraDroit=np.arctan(params[0])
         self.contourDroit.append(np.concatenate((np.flip(xmb),xma,ym)))
         self.contourDroit.append(np.concatenate((np.flip(ymb),yma,xm)))
         
     def contour(self):
         """
-         
+        fonction principale
         """
         self.interneCompDroit(self.centreDroit)
         self.interneCompGauche(self.centreGauche)
+        self.moAngle = (self.angleCaraDroit+self.angleCaraGauche)/2  
+    
 
 print("module interieur charge")
 if __name__=="__main__":
-    no=19
+    no=19 #10 11 13 14 15 17 18 19
     image = img.imread('../mailleSelection/maille'+str(no)+'.jpg')
     image = image[:, :, 1]
     interi=interieur(image,[813,382],[425,363])#
     interi.contour()
     xa,ya=interi.contourDroit[0],interi.contourDroit[1]
     xb,yb=interi.contourGauche[0],interi.contourGauche[1]
-    plt.plot(xa,ya)
-    plt.plot(xb,yb)
+    # plt.plot(xa,ya)
+    # plt.plot(xb,yb)
+    plt.imshow(image,cmap = plt.get_cmap('gray'))
     plt.axis("equal")
     plt.show()
