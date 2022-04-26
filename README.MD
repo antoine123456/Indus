@@ -13,3 +13,5 @@ https://www.semanticscholar.org/paper/Machine-parts-recognition-and-defect-detec
 
 Toutes les façons de détecter les défaut
 https://www.semanticscholar.org/paper/Automated-Visual-Defect-Detection-for-Flat-Steel-A-Luo-Fang/f5b9b024b3e3d7207225365bd52a4a0666e0f9a6/figure/2
+
+shape defect detection using contour
