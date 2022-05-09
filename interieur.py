@@ -44,7 +44,7 @@ class interieur(object):
             y.append(origine-j)
             y1.append(origine+k)
         return y,y1
-    
+
     def interne(self,origine):
         """
         contours des trous internes
@@ -92,8 +92,8 @@ class interieur(object):
         ordre=np.argsort(xa1)
         xa1,ya1=xa1[ordre],ya1[ordre]
         xmb,ymb=ut.merge(xa1,ya1)
-        
-        
+
+
         limite=20
         orx,ory=xm[limite:-limite],ym[limite:-limite]
         params=np.polyfit(ory, orx, 1)
@@ -108,7 +108,7 @@ class interieur(object):
     def interneCompDroit(self,bords):
         """
         Eviction des points doubles
-        
+
         Ces fonctions se répètent car il n'est pas très utile de les regrouper
         vu le nombre de petites différences
         -> origine : centre du trou à explorer
@@ -136,7 +136,7 @@ class interieur(object):
         ordre=np.argsort(xa1)
         xa1,ya1=xa1[ordre],ya1[ordre]
         xmb,ymb=ut.merge(xa1,ya1)
-        
+
         limite=20
         orx,ory=xm[limite:-limite],ym[limite:-limite]
         params=np.polyfit(ory, orx, 1)
@@ -145,19 +145,19 @@ class interieur(object):
         Y=params[1]+params[0]*xx
         print(180/np.pi*np.arctan(params[0]))
         plt.plot(xx,Y)
-        
+
         self.angleCaraDroit=np.arctan(params[0])
         self.contourDroit.append(np.concatenate((np.flip(xmb),xma,ym)))
         self.contourDroit.append(np.concatenate((np.flip(ymb),yma,xm)))
-        
+
     def contour(self):
         """
         fonction principale
         """
         self.interneCompDroit(self.centreDroit)
         self.interneCompGauche(self.centreGauche)
-        self.moAngle = (self.angleCaraDroit+self.angleCaraGauche)/2  
-    
+        self.moAngle = (self.angleCaraDroit+self.angleCaraGauche)/2
+
 
 print("module interieur charge")
 if __name__=="__main__":

@@ -55,7 +55,7 @@ def merge(listea, listeb, x0=0, y0=0):
         Yn = np.append(Yn, poly(xx))
     subx = listea[dec*pas:]
     suby = listeb[dec*pas:]
-    
+
     if len(subx) > 10:
         params = polyfit_with_fixed_points(1, subx, suby, Xn[-1:], Yn[-1:])
         poly = np.polynomial.Polynomial(params)
